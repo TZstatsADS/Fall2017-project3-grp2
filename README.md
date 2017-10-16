@@ -1,4 +1,4 @@
-# Project: Dogs, Fried Chicken or Blueberry Muffins?
+﻿# Project: Dogs, Fried Chicken or Blueberry Muffins?
 ![image](figs/chicken.jpg)
 ![image](figs/muffin.jpg)
 
@@ -6,13 +6,13 @@
 
 Term: Fall 2017
 
-+ Team #
++ Group 2
 + Team members
-	+ team member 1
-	+ team member 2
-	+ team member 3
-	+ team member 4
-	+ team member 5
+	+ Li, Yiran
+	+ Lu, Qingyun
+	+ Olivo, Enrique (Presenter)
+	+ Yasuda, Saaya
+	+ Li, Qihang
 
 + Project summary: In this project, we created a classification engine for images of dogs versus fried chicken versus blueberry muffins. 
 	
