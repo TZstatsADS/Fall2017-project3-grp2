@@ -1,0 +1,27 @@
+---
+title: "HOG-feature"
+output: html_notebook
+---
+
+```{r}
+### Feature extraction
+#### Using HOG
+
+#install.packages("OpenImageR")
+library(OpenImageR)
+
+hog <- vector()
+
+for (i in 1:3000){
+  num<-nchar(as.character(i))
+  path <- paste0("D:/Github/Fall2017-project3-fall2017-project3-grp2/data/images/img_",paste(rep(0,4-num),collapse = ""),i,".jpg",sep = "")
+  x <- readImage(path)
+  hog <- rbind(hog,HOG(x))
+}
+
+write.csv(hog,file = "hog.csv")
+```
+
+
+
+
