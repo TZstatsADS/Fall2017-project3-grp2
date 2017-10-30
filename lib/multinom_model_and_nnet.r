@@ -1,5 +1,5 @@
 #######################################
-# Multinomial logictic regression
+# Multinomial logictic regression & Neural Net
 # Author: Saaya Yasuda (sy2569)
 #######################################
 
@@ -127,4 +127,53 @@ postResample(test_data$label,multinomtest_result_stepwise)
 # 0.8033333 0.7048437 
 # -> error rate 19.67%
 
+
+
+
+#######################################
+# nnet_train function
+#######################################
+nnet_train <- function(train_data, size){
+  nnet_fit <- nnet(formula = as.factor(label) ~ .,
+                   data=train_data, MaxNWts = 100000, 
+                   maxit = 2000, size = size, trace=FALSE) #maxit is set based on a few tests
+  return(nnet_fit)
+}
+
+#######################################
+# nnet_test function
+#######################################
+
+nnet_test <- function(test_data, fit){
+  nnet_pred = predict(fit, type="class", newdata=test_data)
+  return(nnet_pred)
+}
+
+cv <- function(train_data,test_data){
+  accuracy_vec = c()
+  for(i in 1:5){
+    nnetfit_train = nnet_train(train_data, i)
+    nnettest_result = nnet_test(test_data,nnetfit_train)
+    accuracy = postResample(as.factor(test_data$label),as.factor(nnettest_result))[[1]]
+    accuracy_vec <- c(accuracy_vec, accuracy)
+  }
+  return(accuracy_vec)
+}
+
+system.time(cv(train_data,test_data))
+
+result = cv(train_data,test_data)
+print(result)
+# [1] 0.6833333 0.8111111 0.7944444 0.7500000 0.7455556
+
+size = which.max(result) # best size for the train model = 2
+# for running it: nnet_train(train_data, size)
+
+### Accuracy & Error rate for neural net
+# 0.8111111 with size 2
+# -> Error rate: 0.1888889 %
+
+### Running time for neural net
+#user  system elapsed 
+#14.571   0.020  14.600
 
