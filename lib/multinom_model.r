@@ -59,8 +59,20 @@ multinom_train <- function(train_data){
 
 # run it:
 multinomfit_train = multinom_train(train_data)
+system.time(multinom_train(train_data))
 
-#system.time(multinom_train(train_data))
+# For SIFT
+#user  system elapsed 
+#360.566   2.307 365.568
+
+# For HOG
+#user  system elapsed 
+#0.690   0.015   0.706 
+
+#system.time(
+stepwisefit = step(multinomfit_train$fit, direction="both", 
+                   scope=formula(multinomfit_train$fit))
+#)
 
 #######################################
 # multinom_test function
@@ -74,17 +86,23 @@ multinom_test <- function(test_data, fit){
 multinomtest_result = multinom_test(test_data,multinomfit_train$fit)
 postResample(test_data$label,multinomtest_result)
 
-#> postResample(test_data$label,multinomtest_result)
+multinomtest_result_stepwise = multinom_test(test_data,stepwisefit)
+postResample(test_data$label,multinomtest_result_stepwise)
+
 # For SIFT
-#Accuracy     Kappa 
-#0.7254464 0.5882907 
-#-> error rate 27.45%
+# Accuracy     Kappa 
+# 0.7254464 0.5882907 
+# -> error rate 27.45%
 
 # For HOG
-#Accuracy     Kappa 
-#0.8044444 0.7065221 
-#-> error rate 19.56%
+# Accuracy     Kappa 
+# 0.8044444 0.7065221 
+# -> error rate 19.56%
 
+# For HOG (via Stepwise to reduce # of var)
+# Accuracy     Kappa 
+# 0.8033333 0.7048437 
+# -> error rate 19.67%
 
 #confusionMatrix(test_data$label,multinomtest_result)
 
