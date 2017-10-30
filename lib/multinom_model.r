@@ -59,7 +59,17 @@ multinom_train <- function(train_data){
 
 # run it:
 multinomfit_train = multinom_train(train_data)
-system.time(multinom_train(train_data))
+#system.time(multinom_train(train_data))
+
+stepwisefit = step(multinomfit_train$fit, direction="both", 
+                   scope=formula(multinomfit_train$fit))
+
+#system.time(step(multinomfit_train$fit, direction="both", 
+#                 scope=formula(multinomfit_train$fit)))
+
+#######################################
+# Running time
+#######################################
 
 # For SIFT
 #user  system elapsed 
@@ -69,10 +79,9 @@ system.time(multinom_train(train_data))
 #user  system elapsed 
 #0.690   0.015   0.706 
 
-#system.time(
-stepwisefit = step(multinomfit_train$fit, direction="both", 
-                   scope=formula(multinomfit_train$fit))
-#)
+# For HOG (via Stepwise function to reduce # of var in x)
+#user  system elapsed 
+#292.679   6.325 298.518 
 
 #######################################
 # multinom_test function
@@ -89,6 +98,10 @@ postResample(test_data$label,multinomtest_result)
 multinomtest_result_stepwise = multinom_test(test_data,stepwisefit)
 postResample(test_data$label,multinomtest_result_stepwise)
 
+#######################################
+# Error rate / Accuracy
+#######################################
+
 # For SIFT
 # Accuracy     Kappa 
 # 0.7254464 0.5882907 
@@ -99,7 +112,7 @@ postResample(test_data$label,multinomtest_result_stepwise)
 # 0.8044444 0.7065221 
 # -> error rate 19.56%
 
-# For HOG (via Stepwise to reduce # of var)
+# For HOG (via Stepwise function to reduce # of var in x)
 # Accuracy     Kappa 
 # 0.8033333 0.7048437 
 # -> error rate 19.67%
