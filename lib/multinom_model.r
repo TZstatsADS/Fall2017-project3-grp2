@@ -19,17 +19,31 @@ library(caret)
 # Load sift features + labels
 #######################################
 sift_train = read_csv("~/Downloads/training_set/sift_train.csv")
+hog_features = read_csv("./doc/hog.csv")
+
 label = read_csv("~/Downloads/training_set/label_train.csv")
+
 data = data.frame(label[,2], sift_train[,2:ncol(sift_train)])
+data_hog = data.frame(label[,2], hog_features[,2:ncol(hog_features)])
+
 colnames(data)[1] = "label"
+colnames(data_hog)[1] = "label"
 
 #######################################
-# divide into train & test (70:30)
+# divide into train & test for SIFT (70:30)
 #######################################
 set.seed(123)
 index = sample(1:nrow(data), size=0.7*nrow(data))
 train_data = data[index,]
 test_data = data[-index,]
+
+#######################################
+# divide into train & test for HOG (70:30)
+#######################################
+set.seed(123)
+index = sample(1:nrow(data_hog), size=0.7*nrow(data_hog))
+train_data = data_hog[index,]
+test_data = data_hog[-index,]
 
 #######################################
 # multinom_train function
@@ -46,6 +60,8 @@ multinom_train <- function(train_data){
 # run it:
 multinomfit_train = multinom_train(train_data)
 
+#system.time(multinom_train(train_data))
+
 #######################################
 # multinom_test function
 #######################################
@@ -59,67 +75,16 @@ multinomtest_result = multinom_test(test_data,multinomfit_train$fit)
 postResample(test_data$label,multinomtest_result)
 
 #> postResample(test_data$label,multinomtest_result)
+# For SIFT
 #Accuracy     Kappa 
 #0.7254464 0.5882907 
+#-> error rate 27.45%
+
+# For HOG
+#Accuracy     Kappa 
+#0.8044444 0.7065221 
+#-> error rate 19.56%
+
 
 #confusionMatrix(test_data$label,multinomtest_result)
 
-
-
-
-
-
-
-#######################################
-# base model example: multinomual version
-#######################################
-gbm_train <- function(dat_train, label_train, par=NULL){
-  
-  ### Train a Gradient Boosting Model (GBM) using processed features from training images
-  
-  ### Input: 
-  ###  -  processed features from images 
-  ###  -  class labels for training images
-  ### Output: training model specification
-  
-  ### load libraries
-  library("gbm")
-  
-  ### Train with gradient boosting model
-  if(is.null(par)){
-    depth <- 3
-  } else {
-    depth <- par$depth
-  }
-  fit_gbm <- gbm.fit(x=dat_train, y=label_train,
-                     n.trees=2000,
-                     distribution='multinomial',
-                     interaction.depth=depth, 
-                     bag.fraction = 0.5,
-                     verbose=FALSE)
-  best_iter <- gbm.perf(fit_gbm, method="OOB", plot.it = FALSE)
-  
-  return(list(fit=fit_gbm, iter=best_iter))
-}
-
-gbmfit_train = gbm_train(train_data[,2:ncol(train_data)],train_data$label)
-
-gbm_test <- function(fit_train, dat_test){
-  
-  ### Fit the classfication model with testing data
-  
-  ### Input: 
-  ###  - the fitted classification model using training data
-  ###  -  processed features from testing images 
-  ### Output: training model specification
-  
-  ### load libraries
-  library("gbm")
-  pred <- predict(fit_train$fit, newdata=dat_test, 
-                  n.trees=fit_train$iter, type="response")
-  
-  return(as.numeric(pred> 0.5))
-}
-
-gbmtest_result = gbm_test(fit_train, test_data)
-postResample(test_data$label,gbmtest_result)
