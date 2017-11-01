@@ -35,20 +35,21 @@ test_matrix<-xgb.DMatrix(data = xgb_test, label=test_label)
 
 
 # Basic model
-basic = xgboost(data = train_matrix, label = train_label,
+basic = xgboost(data = train_matrix,
                 max.depth=3,eta=0.01,nthread=2,nround=50,
                 objective = "multi:softprob",
                 eval_metric = "mlogloss",
-                num_class = 3)
+                num_class = 3,
+                verbose = F)
 
-pred = predict(basic, test_matrix)
-prediction<-matrix(pred,nrow = 3,ncol = length(pred)/3) %>%
-  t() %>%
-  data.frame() %>%
-  mutate(label=test_label+1,max_prob=max.col(.,"last"))
+#pred = predict(basic, test_matrix)
+#prediction<-matrix(pred,nrow = 3,ncol = length(pred)/3) %>%
+#  t() %>%
+#  data.frame() %>%
+#  mutate(label=test_label+1,max_prob=max.col(.,"last"))
 
 ## confusion matrix of test set
-confusionMatrix(factor(prediction$label),factor(prediction$max_prob),mode = "everything")
+#confusionMatrix(factor(prediction$label),factor(prediction$max_prob),mode = "everything")
 
 #### Basic model###
 ## Accuracy: 71.89%
@@ -64,9 +65,9 @@ xgb_params_3 = list(objective="multi:softprob",
 
 # fit the model with arbitrary parameters
 xgb_3 = xgboost(data = train_matrix, 
-                label = train_label,
                 params = xgb_params_3,
-                nrounds = 100)
+                nrounds = 100,
+                verbose = F)
 
 # cross validation
 xgb_cv_3 = xgb.cv(params = xgb_params_3,
