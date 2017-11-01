@@ -18,9 +18,9 @@ Summary:
   + Created main.rmd.
   
 + Qingyun Lu: 
-  + Worked on HOG features extraction method.
-  + Worked on XGBoost method for 3-classes classification and tuned the model with grid research.
-  + Tried XGBoost with SIFT + PCA, SIFT, HOG, IBP, GRAYSCALE, GRAYSCALE + SIFT + PCA.
+  + Worked on HOG feature extraction method.
+  + Worked on XGBoost method for 3 classes classification and tuned the model with grid search.
+  + Tried XGBoost with SIFT + PCA, SIFT, HOG, IBP, GRAYSCALE, GRAYSCALE + SIFT + PCA.
 
 + Enrique Olivo:
 
