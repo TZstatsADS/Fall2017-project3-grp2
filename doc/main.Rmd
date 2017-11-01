@@ -80,7 +80,7 @@ test_matrix<-xgb.DMatrix(data = xgb_test, label=test_label)
 
 ###Baseline Model: GBM + SIFT
 
-```{r,warnings=F,echo=F}
+```{r,warnings=F}
 sift_train = read.csv("../data/sift_train.csv")
 label = read.csv("../data/label_train.csv")
 data = data.frame(label[,2], sift_train[,2:ncol(sift_train)])
@@ -91,16 +91,21 @@ index = sample(1:nrow(data), size=0.7*nrow(data))
 train_data = data[index,]
 test_data = data[-index,]
 
+## To run the baseline model uncomment the following ##
+
 # dat_train = training features
 # label_train = labels
 # K = number of folds
 # d = a certain interaction depth
-system.time(result<-gbm_train(train_data[,2:ncol(train_data)],train_data$label))
+# system.time(result<-gbm_train(train_data[,2:ncol(train_data)],train_data$label))
+# result
+
+# 
 ```
 
 ### Our Model: XGBoost + PCA + SIFT
 
-```{r}
+```{r, message=F, results="hide"}
 # Basic model
 basic = xgboost(data = train_matrix,
                 max.depth=3,eta=0.01,nthread=2,nround=50,
@@ -152,21 +157,31 @@ xgb_trcontrol_3 = trainControl(method = "cv",
 # train the model for each parameter combination in the grid
 
 ptm <- proc.time() ## start the time
+
+```
+
+```{r, results="hide"}
+
 xgb_train_3 = train(x=train_matrix, y=train_label,
                     trControl = xgb_trcontrol_3,
                     tuneGrid = xgb_grid_3,
                     method = "xgbTree")
+```
+
+```{r}
+
+
 
 ptm2 <- proc.time()
-ptm2- ptm ## stop the clock
+ptm2- ptm ## stop the clock1
 
-## Time for training: 350.92s
-
+# ## Time for training: 350.92s
+#
 head(xgb_train_3$results[with(xgb_train_3$results,order(RMSE)),],5)
 # get the best model's parameters
 xgb_train_3$bestTune
 
-# best model
+# # best model
 bst = xgboost(data=train_matrix,max.depth=4,eta=0.1,nthread=2,nround=250,colsample_bytree=0.5,min_child_weight=2,subsample=1,objective="multi:softprob",eval_metric="mlogloss",num_class=3)
 
 pred = predict(bst, test_matrix)
@@ -175,10 +190,10 @@ prediction<-matrix(pred,nrow = 3,ncol = length(pred)/3) %>%
   data.frame() %>%
   mutate(label=test_label+1,max_prob=max.col(.,"last"))
 
-## confusion matrix of test set
+# ## confusion matrix of test set
 confusionMatrix(factor(prediction$label),factor(prediction$max_prob),mode = "everything")
 
-## Accuracy: 82.67%
-## Parameters: max.depth=4, eta=0.1, nthread=2, nround=250
+# ## Accuracy: 82.67%
+# ## Parameters: max.depth=4, eta=0.1, nthread=2, nround=250
 ```
 
