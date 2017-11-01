@@ -1,7 +1,7 @@
 
 
 pca_features <- function(data, n){
-  # Input data is just the matrix of features (NO Labels or image indeces)
+  # Input data is just the matrix of features (NO Labels or image indices)
   # Input n is the number of features you'd like to keep
   
   pca=prcomp(data, center=TRUE, scale=TRUE);
