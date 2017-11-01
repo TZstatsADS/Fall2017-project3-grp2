@@ -182,7 +182,7 @@ head(xgb_train_3$results[with(xgb_train_3$results,order(RMSE)),],5)
 xgb_train_3$bestTune
 
 # # best model
-bst = xgboost(data=train_matrix,max.depth=4,eta=0.1,nthread=2,nround=250,colsample_bytree=0.5,min_child_weight=2,subsample=1,objective="multi:softprob",eval_metric="mlogloss",num_class=3)
+bst = xgboost(data=train_matrix,max.depth=4,eta=0.1,nthread=2,nround=250,colsample_bytree=0.5,min_child_weight=2,subsample=1,objective="multi:softprob",eval_metric="mlogloss",num_class=3, verbose=F)
 
 pred = predict(bst, test_matrix)
 prediction<-matrix(pred,nrow = 3,ncol = length(pred)/3) %>%
