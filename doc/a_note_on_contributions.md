@@ -24,3 +24,7 @@ Summary:
 + Saaya Yasuda: 
 
 + Qihang Li: 
+  + Got the SIFT features with original Matlab code
+  + Extracted LBP features using Matlab
+  + Extracted Grayscale features using R
+  + help organized GitHub directory
