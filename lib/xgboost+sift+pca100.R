@@ -97,33 +97,33 @@ xgb_trcontrol_3 = trainControl(method = "cv",
 
 # train the model for each parameter combination in the grid
 
-ptm <- proc.time() ## start the time
-xgb_train_3 = train(x=train_matrix, y=train_label,
-                    trControl = xgb_trcontrol_3,
-                    tuneGrid = xgb_grid_3,
-                    method = "xgbTree")
+#ptm <- proc.time() ## start the time
+#xgb_train_3 = train(x=train_matrix, y=train_label,
+#                    trControl = xgb_trcontrol_3,
+#                    tuneGrid = xgb_grid_3,
+#                    method = "xgbTree")
 
-ptm2 <- proc.time()
-ptm2- ptm ## stop the clock
+#ptm2 <- proc.time()
+#ptm2- ptm ## stop the clock
 
 ## Time for training: 350.92s
 
 
-head(xgb_train_3$results[with(xgb_train_3$results,order(RMSE)),],5)
+#head(xgb_train_3$results[with(xgb_train_3$results,order(RMSE)),],5)
 # get the best model's parameters
-xgb_train_3$bestTune
+#xgb_train_3$bestTune
 
 # best model
-bst = xgboost(data=train_matrix,max.depth=4,eta=0.1,nthread=2,nround=250,colsample_bytree=0.5,min_child_weight=2,subsample=1,objective="multi:softprob",eval_metric="mlogloss",num_class=3)
+#bst = xgboost(data=train_matrix,max.depth=4,eta=0.1,nthread=2,nround=250,colsample_bytree=0.5,min_child_weight=2,subsample=1,objective="multi:softprob",eval_metric="mlogloss",num_class=3)
 
-pred = predict(bst, test_matrix)
-prediction<-matrix(pred,nrow = 3,ncol = length(pred)/3) %>%
-  t() %>%
-  data.frame() %>%
-  mutate(label=test_label+1,max_prob=max.col(.,"last"))
+#pred = predict(bst, test_matrix)
+#prediction<-matrix(pred,nrow = 3,ncol = length(pred)/3) %>%
+#  t() %>%
+#  data.frame() %>%
+#  mutate(label=test_label+1,max_prob=max.col(.,"last"))
 
 ## confusion matrix of test set
-confusionMatrix(factor(prediction$label),factor(prediction$max_prob),mode = "everything")
+#confusionMatrix(factor(prediction$label),factor(prediction$max_prob),mode = "everything")
 
 ## Accuracy: 82.67%
 ## Parameters: max.depth=4, eta=0.1, nthread=2, nround=250
