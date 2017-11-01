@@ -23,6 +23,8 @@ Summary:
   + Tried XGBoost with SIFT + PCA, SIFT, HOG, IBP, GRAYSCALE, GRAYSCALE + SIFT + PCA.
 
 + Enrique Olivo:
+  + Created the PowerPoint presentation
+  + Worked on GBM Baseline Model function
 
 + Saaya Yasuda: 
   + Created the training and testing function for multinomial logistic regression. Since multinom() doesn't take in parameters, instead of cross validation, I used a step function to try versions with a fewer variables in x.
