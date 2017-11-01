@@ -19,8 +19,8 @@ Summary:
   
 + Qingyun Lu: 
   + Worked on HOG features extraction method.
-  + Worked on XGBoost method for 3-classes classification.
-  + Tried XGBoost with SIFT + PCA, SIFT, HOG, IBP, GRAYSCALE, GRAYSCALE + SIFT + PCA.
+  + Worked on XGBoost method for 3-classes classification and tuned the model with grid research.
+  + Tried XGBoost with SIFT + PCA, SIFT, HOG, IBP, GRAYSCALE, GRAYSCALE + SIFT + PCA.
 
 + Enrique Olivo:
 
