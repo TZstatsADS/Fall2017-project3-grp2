@@ -13,6 +13,8 @@ Summary:
   + Created the training, testing, and cross validation function for Random Forest. The cross validation function calculates
   and compares the cv errors and running time of various n_tree values. 
   + Produced the PCA function and sample code for dimension reduction to a user-specified number of features.
+  + Ran cross-validation on Neural Net on PCA-processed SIFT, Random Forest with IBP, SIFT, and PCA-processed SIFT, resulting
+  in classification accuracy of 70.7%, 70.4%, 74.7% and 79.3% respectively. 
   + Created main.rmd.
   
 + Qingyun Lu: 
