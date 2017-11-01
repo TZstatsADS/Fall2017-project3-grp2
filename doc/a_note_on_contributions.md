@@ -29,7 +29,7 @@ Summary:
 + Saaya Yasuda: 
   + Created the training and testing function for multinomial logistic regression. Since multinom() doesn't take in parameters, instead of cross validation, I used a step function to try versions with a fewer variables in x.
   + Created the training, testing, and cross validation function for neural net. For cross validation, I tried different values of the size parameter and picked the one that's most accurate.
-  + Ran all of those functions on SIFT features and HOG features, measured the time, and reported the accuracy/error rate.
+  + Ran all of those functions on SIFT, HOG, and LBP features, measured the time, and reported the accuracy/error rate.
   + Worked on extracting the SIFT features with the original Matlab code.
 
 + Qihang Li: 

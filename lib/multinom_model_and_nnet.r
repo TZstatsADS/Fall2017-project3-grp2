@@ -25,7 +25,8 @@ library(caret)
 
 # feature files
 sift_train = read_csv("~/Downloads/training_set/sift_train.csv")
-hog_features = read_csv("./doc/hog.csv")
+hog_features = read_csv("./data/hog.csv")
+lbp_features = read_csv("./data/lbp.csv",col_names=FALSE)
 
 # label
 label = read_csv("~/Downloads/training_set/label_train.csv")
@@ -33,9 +34,13 @@ label = read_csv("~/Downloads/training_set/label_train.csv")
 # merging them
 data = data.frame(label[,2], sift_train[,2:ncol(sift_train)])
 data_hog = data.frame(label[,2], hog_features[,2:ncol(hog_features)])
+data_lbp = data.frame(label[,2], lbp_features[,1:ncol(lbp_features)])
 
 colnames(data)[1] = "label"
 colnames(data_hog)[1] = "label"
+colnames(data_lbp)[1] = "label"
+
+source("../lib/eco2121_train_gbm_baseline.r")
 
 #######################################
 # For SIFT: divide into train & test (70:30)
@@ -52,6 +57,15 @@ set.seed(123)
 index = sample(1:nrow(data_hog), size=0.7*nrow(data_hog))
 train_data = data_hog[index,]
 test_data = data_hog[-index,]
+
+
+#######################################
+# For LBP: divide into train & test (70:30)
+#######################################
+set.seed(123)
+index = sample(1:nrow(data_lbp), size=0.7*nrow(data_lbp))
+train_data = data_lbp[index,]
+test_data = data_lbp[-index,]
 
 #######################################
 # multinom_train function
@@ -90,6 +104,10 @@ stepwisefit = step(multinomfit_train$fit, direction="both",
 #user  system elapsed 
 #292.679   6.325 298.518 
 
+# For LBP
+#user  system elapsed 
+#1.294   0.027   1.335 
+
 #######################################
 # multinom_test function
 #######################################
@@ -127,7 +145,9 @@ postResample(test_data$label,multinomtest_result_stepwise)
 # 0.8033333 0.7048437 
 # -> error rate 19.67%
 
-
+# For LBP
+# Accuracy     Kappa 
+# 0.7633333 0.6450079 
 
 
 #######################################
