@@ -15,26 +15,26 @@ editor_options:
 
 ###Install Packages
 ```{r,message=F}
-packages.used=c("gbm", "caret","DMwR" ,"nnet","randomForest","EBImage","e1071")
-
-# check packages that need to be installed.
-packages.needed=setdiff(packages.used, 
-                        intersect(installed.packages()[,1], 
-                                  packages.used))
-# install additional packages
-if(length(packages.needed)>0){
-  install.packages(packages.needed, dependencies = TRUE)
-}
+# packages.used=c("gbm", "caret","DMwR" ,"nnet","randomForest","EBImage","e1071","xgboost")
+# 
+# # check packages that need to be installed.
+# packages.needed=setdiff(packages.used, 
+#                         intersect(installed.packages()[,1], 
+#                                   packages.used))
+# # install additional packages
+# if(length(packages.needed)>0){
+#   install.packages(packages.needed, dependencies = TRUE)
+# }
 
 ```
 
 ###Read in SIFT feature data
 ```{r,warning=F,message=F}
-sift_train0 <- read.csv("./data/sift_train.csv", header=F)
-label_train0 <- read.csv("./data/label_train.csv", header=F)
-source("../lib/eco2121.train_gbm_baseline.R")
+sift_train0 <- read.csv("../data/sift_train.csv", header=F)
+label_train0 <- read.csv("../data/label_train.csv", header=F)
+source("../lib/eco2121_train_gbm_baseline.r")
 source("../lib/pca_features.r")
-source("../lib/xgboost+sift+pca100.R")
+#source("../lib/new_xgboost_sift_pca100.r")
 
 sift <- sift_train0[, -1]
 ```
@@ -50,8 +50,8 @@ set.seed(500)
 # colnames(pca_train_data)[ncol(pca_train_data)] <- "label"
 # pca_train_data<-as.data.frame(pca_train_data)
 
-sift_pca<-read.csv("feature_pca100.csv",header = T, as.is = T)
-label<-read.csv("label_train.csv",header = T,as.is = T)
+sift_pca<-read.csv("../data/feature_pca100.csv",header = T, as.is = T)
+label<-read.csv("../data/label_train.csv",header = T,as.is = T)
 dat<-cbind(label[,2],sift_pca[,-1])
 colnames(dat)[1]<-"label"
 
@@ -81,16 +81,73 @@ test_matrix<-xgb.DMatrix(data = xgb_test, label=test_label)
 ###Baseline Model: GBM + SIFT
 
 ```{r,warnings=F,echo=F}
-sift_train = read_csv("sift_train.csv")
-label = read_csv("label_train.csv")
+sift_train = read_csv("./data/sift_train.csv")
+label = read_csv("./data/label_train.csv")
 data = data.frame(label[,2], sift_train[,2:ncol(sift_train)])
 colnames(data)[1] = "label"
-ystem.time(result<-gbm_train(train_data[,2:ncol(train_data)],train_data$label))
+
+set.seed(123)
+index = sample(1:nrow(data), size=0.7*nrow(data))
+train_data = data[index,]
+test_data = data[-index,]
+
+# dat_train = training features
+# label_train = labels
+# K = number of folds
+# d = a certain interaction depth
+system.time(result<-gbm_train(train_data[,2:ncol(train_data)],train_data$label))
 ```
 
 ### Our Model: XGBoost + PCA + SIFT
 
 ```{r}
+# Basic model
+basic = xgboost(data = train_matrix,
+                max.depth=3,eta=0.01,nthread=2,nround=50,
+                objective = "multi:softprob",
+                eval_metric = "mlogloss",
+                num_class = 3,
+                verbose = F)
+
+# Tune the model
+xgb_params_3 = list(objective="multi:softprob",
+                    eta = 0.01,
+                    max.depth = 3,
+                    eval_metric = "mlogloss",
+                    num_class = 3)
+
+# fit the model with arbitrary parameters
+xgb_3 = xgboost(data = train_matrix, 
+                params = xgb_params_3,
+                nrounds = 100,
+                verbose = F)
+
+# cross validation
+xgb_cv_3 = xgb.cv(params = xgb_params_3,
+                  data = train_matrix, 
+                  nrounds = 100,
+                  nfold = 5,
+                  showsd = T,
+                  stratified = T,
+                  verbose = F,
+                  prediction = T)
+
+# set up the cross validated hyper-parameter search
+xgb_grid_3 = expand.grid(nrounds=c(100,250,500),
+                         eta = c(1,0.1,0.01),
+                         max_depth = c(2,4,6,8,10),
+                         gamma=1,
+                         colsample_bytree=0.5,
+                         min_child_weight=2,
+                         subsample = 1)
+
+# pack the training control parameters
+xgb_trcontrol_3 = trainControl(method = "cv",
+                               number = 5,
+                               verboseIter = T,
+                               returnData = F,
+                               returnResamp = "all",
+                               allowParallel = T)
 
 # train the model for each parameter combination in the grid
 
