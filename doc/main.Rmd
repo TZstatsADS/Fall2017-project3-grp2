@@ -81,8 +81,8 @@ test_matrix<-xgb.DMatrix(data = xgb_test, label=test_label)
 ###Baseline Model: GBM + SIFT
 
 ```{r,warnings=F,echo=F}
-sift_train = read_csv("./data/sift_train.csv")
-label = read_csv("./data/label_train.csv")
+sift_train = read.csv("../data/sift_train.csv")
+label = read.csv("../data/label_train.csv")
 data = data.frame(label[,2], sift_train[,2:ncol(sift_train)])
 colnames(data)[1] = "label"
 
